@@ -29,78 +29,80 @@ def render_ctf_grid(ctf_info):
 
 # FLAG 제출 버튼
 def render_flag_sub(challenge_id: str):
-    supabase = get_client()
-    user = current_user() 
-    user_id = getattr(user, "id", None) or (user.get("id") if isinstance(user, dict) else None)
+    st.write(f"### 현재 플래그 제출이 불가능합니다.")
+    
+    # supabase = get_client()
+    # user = current_user() 
+    # user_id = getattr(user, "id", None) or (user.get("id") if isinstance(user, dict) else None)
 
-    SUPABASE_URL = os.getenv("SUPABASE_URL")
-    SB_SERVICE_ROLE_KEY = os.getenv("SB_SERVICE_ROLE_KEY")
+    # SUPABASE_URL = os.getenv("SUPABASE_URL")
+    # SB_SERVICE_ROLE_KEY = os.getenv("SB_SERVICE_ROLE_KEY")
 
-    supabase_admin = create_client(SUPABASE_URL, SB_SERVICE_ROLE_KEY)
+    # supabase_admin = create_client(SUPABASE_URL, SB_SERVICE_ROLE_KEY)
 
-    try:
-        existing_rows = (
-            supabase.table("scores")
-            .select("challenge_id")
-            .eq("user_id", user_id)
-            .eq("challenge_id", challenge_id)
-            .execute()
-        ).data
+    # try:
+    #     existing_rows = (
+    #         supabase.table("scores")
+    #         .select("challenge_id")
+    #         .eq("user_id", user_id)
+    #         .eq("challenge_id", challenge_id)
+    #         .execute()
+    #     ).data
         
-        if existing_rows:
-            st.info(f"✅ 이미 해결한 문제입니다: {challenge_id.upper()}")
-            return
+    #     if existing_rows:
+    #         st.info(f"✅ 이미 해결한 문제입니다: {challenge_id.upper()}")
+    #         return
             
-    except APIError as e:
-        st.error(f"❌ 문제 상태 확인 실패: {e.code} / {e.message}")
-        return
+    # except APIError as e:
+    #     st.error(f"❌ 문제 상태 확인 실패: {e.code} / {e.message}")
+    #     return
 
-    with st.form(key=f"flag_form_{challenge_id}"):
-        st.markdown("## 🚩 FLAG 제출")
-        user_flag = st.text_input("획득한 flag를 입력하세요")
-        submitted = st.form_submit_button("제출")
+    # with st.form(key=f"flag_form_{challenge_id}"):
+    #     st.markdown("## 🚩 FLAG 제출")
+    #     user_flag = st.text_input("획득한 flag를 입력하세요")
+    #     submitted = st.form_submit_button("제출")
 
-    if not submitted or not user_flag.strip():
-        return
+    # if not submitted or not user_flag.strip():
+    #     return
 
-    hashed = sha256_hex(user_flag.strip())
+    # hashed = sha256_hex(user_flag.strip())
 
-    try:
-        flag_result = (
-            supabase
-            .table("flags")
-            .select("points, challenge_id")
-            .eq("flag_hash", hashed)
-            .eq("challenge_id", challenge_id) 
-            .single()
-            .execute()
-        )
+    # try:
+    #     flag_result = (
+    #         supabase
+    #         .table("flags")
+    #         .select("points, challenge_id")
+    #         .eq("flag_hash", hashed)
+    #         .eq("challenge_id", challenge_id) 
+    #         .single()
+    #         .execute()
+    #     )
         
-        row = flag_result.data if flag_result else None
+    #     row = flag_result.data if flag_result else None
 
-    except APIError as e:
-        st.error("❌ 오답입니다.")
-        return
+    # except APIError as e:
+    #     st.error("❌ 오답입니다.")
+    #     return
 
-    if not row or "points" not in row:
-        st.error("❌ 오답입니다.")
-        return
+    # if not row or "points" not in row:
+    #     st.error("❌ 오답입니다.")
+    #     return
 
-    # 정답 처리
-    try:
-        result = supabase_admin.table("scores").upsert({
-            "user_id": user_id,
-            "challenge_id": challenge_id,
-            "score": row["points"]
-        }, on_conflict="user_id,challenge_id").execute()
+    # # 정답 처리
+    # try:
+    #     result = supabase_admin.table("scores").upsert({
+    #         "user_id": user_id,
+    #         "challenge_id": challenge_id,
+    #         "score": row["points"]
+    #     }, on_conflict="user_id,challenge_id").execute()
         
-        st.session_state[f"{challenge_id}_solved"] = True
-        st.success(f"✅ 정답입니다! {row['points']}점 획득")
-        st.write(f"🏅 총점: **{total_score(user_id)}**")
+    #     st.session_state[f"{challenge_id}_solved"] = True
+    #     st.success(f"✅ 정답입니다! {row['points']}점 획득")
+    #     st.write(f"🏅 총점: **{total_score(user_id)}**")
         
-    except Exception as e:
-        st.error(f"❌ 점수 저장 실패: {type(e).__name__}: {str(e)}")
-        return
+    # except Exception as e:
+    #     st.error(f"❌ 점수 저장 실패: {type(e).__name__}: {str(e)}")
+    #     return
     
 # 업로드된 .txt파일에서 텍스트 추출 함수
 def extract_text(uploaded_file):
