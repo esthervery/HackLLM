@@ -5,7 +5,7 @@ chardet==5.2.0
 st_supabase_connection==2.1.0
 cryptography==44.0.1
 sentence-transformers==5.0.0
-numpy==1.26.0
+numpy>=1.26.4,<3.0
 resend==2.10.0
 backoff==2.2.1
 streamlit-cookies-controller==0.0.4
