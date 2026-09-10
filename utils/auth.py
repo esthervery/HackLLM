@@ -10,6 +10,20 @@ from streamlit_cookies_controller import CookieController, RemoveEmptyElementCon
 import streamlit.components.v1 as components
 load_dotenv()
 
+from dotenv import load_dotenv
+
+load_dotenv()          # 로컬용 — 클라우드에선 no-op
+
+def _env_or_secret(name):
+    """로컬 .env → Streamlit Secrets → None 순서로 값을 찾음"""
+    v = os.getenv(name)
+    if v:
+        return v
+    try:
+        return st.secrets.get(name)   # cloud secrets
+    except Exception:
+        return None
+
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 FERNET_KEY = os.getenv("FERNET_KEY")
