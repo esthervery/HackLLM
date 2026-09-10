@@ -24,11 +24,12 @@ def _env_or_secret(name):
     except Exception:
         return None
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-FERNET_KEY = os.getenv("FERNET_KEY")
-COOKIE_NAME = "user_id"
-SESSION_SECRET = os.getenv("SESSION_SECRET")
+SUPABASE_URL       = _env_or_secret("SUPABASE_URL")
+SUPABASE_KEY       = _env_or_secret("SUPABASE_KEY")
+SB_SERVICE_ROLE_KEY= _env_or_secret("SB_SERVICE_ROLE_KEY")
+SUPABASE_DB_URL    = _env_or_secret("SUPABASE_DB_URL")
+FERNET_KEY         = _env_or_secret("FERNET_KEY")
+SESSION_SECRET     = _env_or_secret("SESSION_SECRET")
 
 RemoveEmptyElementContainer()
 
