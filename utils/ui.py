@@ -18,12 +18,13 @@ def render_main_header():
 # CTF 버튼 그리드
 def render_ctf_grid(ctf_info):
     for start in range(0, len(ctf_info), 5):
-        cols = st.columns(5)
+        cols = st.columns(5, gap="small")
         for col, (file_key, short, label) in zip(cols, ctf_info[start : start + 5]):
             with col:
                 solved = st.session_state.get(f"{file_key}_solved", False)
                 title = f"✅ [{short}]" if solved else f"[{short}]"
-                if st.button(f"{title}\n{label}", key=file_key):
+                if st.button(f"{title}\n{label}", key=file_key,
+                             use_container_width=True):
                     st.switch_page(f"pages/{file_key}.py")
 
 
@@ -38,6 +39,7 @@ def render_flag_sub(challenge_id: str):
 
     supabase_admin = create_client(SUPABASE_URL, SB_SERVICE_ROLE_KEY)
 
+    solved = False
     try:
         existing_rows = (
             supabase.table("scores")
@@ -46,13 +48,12 @@ def render_flag_sub(challenge_id: str):
             .eq("challenge_id", challenge_id)
             .execute()
         ).data
-        
-        if existing_rows:
-            st.info(f"✅ 이미 해결한 문제입니다: {challenge_id.upper()}")
-            return
-            
-    except APIError as e:
-        st.error(f"❌ 문제 상태 확인 실패: {e.code} / {e.message}")
+        solved = bool(existing_rows)
+    except Exception:
+        solved = False
+
+    if solved:
+        st.info(f"✅ 이미 해결한 문제입니다: {challenge_id.upper()}")
         return
 
     with st.form(key=f"flag_form_{challenge_id}"):
