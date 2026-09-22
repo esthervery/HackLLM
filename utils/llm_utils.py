@@ -1596,10 +1596,10 @@ def ctf07_llm_ask(is_admin, counter, user_input, user_api_key):
                 st.rerun()
 
             # 응답 파싱 후 관리자 권한 확인
-            if "flag{privilege_escalationd}" in answer_only:
+            if "flag{privilege_escalation}" in answer_only:
                 st.session_state["ctf07_admin"] = True
                 st.success("프롬프트 인젝션에 성공해 관리자 권한을 획득하셨습니다! 이어서 최종 flag를 획득해보세요!", icon="🎉")
-                return "flag{privilege_escalationd}"
+                return "flag{privilege_escalation}"
             else:
             # 일반 응답 출력
                 if counter==5 and not(st.session_state["ctf07_admin"]):
